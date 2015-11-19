@@ -12,6 +12,12 @@ describe Wordmove::SqlAdapter do
   }
 
   context ".initialize" do
+
+    let(:sql) do
+      Tempfile.new('sql').tap { |d| d.write('DUMP'); d.close }
+    end
+    let(:sql_path) { sql.path }
+
     it "should assign variables correctly on initialization" do
       expect(adapter.sql_path).to eq(sql_path)
       expect(adapter.source_config).to eq(source_config)
@@ -19,22 +25,10 @@ describe Wordmove::SqlAdapter do
     end
   end
 
-  context ".sql_content" do
-    let(:sql) do
-      Tempfile.new('sql').tap { |d| d.write('DUMP'); d.close }
-    end
-    let(:sql_path) { sql.path }
-
-    it "should read the sql file content" do
-      expect(adapter.sql_content).to eq('DUMP')
-    end
-  end
-
   context ".adapt!" do
     it "should replace host, path and write to sql" do
       expect(adapter).to receive(:replace_vhost!).and_return(true)
       expect(adapter).to receive(:replace_wordpress_path!).and_return(true)
-      expect(adapter).to receive(:write_sql!).and_return(true)
       adapter.adapt!
     end
   end
@@ -145,16 +139,4 @@ describe Wordmove::SqlAdapter do
     end
   end
 
-  context ".write_sql!" do
-    let(:content) { "THE DUMP!" }
-    let(:sql) { Tempfile.new('sql').tap do |d| d.write(content); d.close end }
-    let(:sql_path) { sql.path }
-    let(:the_funk) { "THE FUNK THE FUNK THE FUNK" }
-
-    it "should write content to file" do
-      adapter.sql_content = the_funk
-      adapter.write_sql!
-      File.open(sql_path).read == the_funk
-    end
-  end
 end
