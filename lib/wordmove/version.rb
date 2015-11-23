@@ -1,3 +1,3 @@
 module Wordmove
-  VERSION = "1.4.0.pre4"
+  VERSION = "1.4.0.as"
 end
